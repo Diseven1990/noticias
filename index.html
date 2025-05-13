@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mural de Notícias</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    header {
+      background-color: #111;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    form {
+      margin-bottom: 2rem;
+      display: grid;
+      gap: 1rem;
+    }
+    form input, form textarea, form button {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    form button {
+      background-color: #111;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    form button:hover {
+      background-color: #333;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .noticia {
+      position: relative;
+      height: 300px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: flex-end;
+    }
+    .noticia .overlay {
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 1rem;
+      width: 100%;
+    }
+    .noticia h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+    .noticia p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mural de Notícias</h1>
+  </header>
+  <main>
+    <form id="formulario">
+      <input type="text" id="titulo" placeholder="Título da notícia" required />
+      <textarea id="descricao" placeholder="Descrição da notícia" required></textarea>
+      <input type="url" id="imagem" placeholder="URL da imagem (opcional)" />
+      <button type="submit">Adicionar Notícia</button>
+    </form>
+    <div id="noticias" class="grid"></div>
+  </main>
+  <script>
+    const form = document.getElementById('formulario');
+    const noticias = document.getElementById('noticias');
+
+    function carregarNoticias() {
+      const dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      noticias.innerHTML = '';
+      dados.reverse().forEach(n => {
+        const div = document.createElement('div');
+        div.className = 'noticia';
+        div.style.backgroundImage = n.imagem ? `url(${n.imagem})` : 'none';
+
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.innerHTML = `<h2>${n.titulo}</h2><p>${n.descricao}</p>`;
+
+        div.appendChild(overlay);
+        noticias.appendChild(div);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const titulo = document.getElementById('titulo').value;
+      const descricao = document.getElementById('descricao').value;
+      const imagem = document.getElementById('imagem').value;
+      const nova = { titulo, descricao, imagem };
+
+      const dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      dados.push(nova);
+      localStorage.setItem('noticias', JSON.stringify(dados));
+      form.reset();
+      carregarNoticias();
+    });
+
+    carregarNoticias();
+  </script>
+</body>
+</html>
